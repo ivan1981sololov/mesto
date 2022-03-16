@@ -1,3 +1,8 @@
+
+import Card from './Card.js'
+import FormValidator from './FormValidator.js'
+
+
 // Закрываем popup с помощью ESC
 const popupList = Array.from(document.querySelectorAll('.popup'));
 
@@ -15,7 +20,6 @@ function closePopup() {
 
 
 function handleEscKey(evt) {
-    console.log(evt);
     if (evt.key === 'Escape') {
         closePopup();
     }
@@ -88,7 +92,7 @@ function handleCardsFormSubmit (evt) {
     item.name = inputCard.value;
     item.link = inputImage.value;
 
-    addCard(createCard(item));
+    addCard(new Card(item, '#element-template'));
 
     inputCard.value = '';
     inputImage.value = '';
@@ -111,7 +115,7 @@ const imageTitle = document.querySelector('.image__title');
 const imagePopup = document.querySelector('#image');
 
 
-function openImagePopup (item) {
+export function openImagePopup (item) {
     imageBody.src = item.target.src;
     imageBody.alt = item.target.alt;
     imageTitle.textContent = item.target.alt;
@@ -146,7 +150,7 @@ function downloadCards () {
         }
       ];
     initialCards.forEach(function(item){
-        addCard(createCard(item));
+        addCard(new Card(item, '#element-template'));
     })
 }
 
@@ -155,32 +159,7 @@ function addCard (card) {
     elements.prepend(card);
 }
 
-function deleteCard (evt) {
-    evt.target.closest('.element').remove()
-}
 
-
-function createCard (item) {
-    const cardTemplate = document.querySelector('#element-template').content;
-    const cardElement = cardTemplate.querySelector('.element').cloneNode(true);
-    const cardImage = cardElement.querySelector('.element__image');
-    const cardTitle = cardElement.querySelector('.element__title');
-    const cardLikeButton = cardElement.querySelector('.element__like');
-    const cardDeleteButton = cardElement.querySelector('.element__trash');
-
-    cardImage.src = item.link;
-    cardImage.alt = item.name;
-    cardTitle.textContent = item.name;
-
-    cardLikeButton.addEventListener('click', function(evt){
-        evt.target.classList.toggle('element__like_active');
-    });
-
-    cardDeleteButton.addEventListener('click',deleteCard);
-    cardImage.addEventListener('click',openImagePopup);
-
-    return cardElement;
-}
 
 downloadCards();
 
@@ -192,3 +171,19 @@ const closePopupButtonList = Array.from(document.querySelectorAll('.popup__close
 closePopupButtonList.forEach((buttonElement) => {
     buttonElement.addEventListener('click',closePopup)
 })
+
+
+const selectorsForm = { 
+    formSelector: '.form', 
+    inputSelector: '.form__input', 
+    submitButtonSelector: '.form__submit', 
+    inactiveButtonClass: 'form__submit_inactive', 
+    inputErrorClass: 'form__input_type_error', 
+    errorClass: 'form__input-error_visible' 
+};
+
+
+const form1 = new FormValidator(selectorsForm, '.form1');
+form1.enableValidation()
+const form2 = new FormValidator(selectorsForm, '.form2');
+form2.enableValidation()
