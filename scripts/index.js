@@ -8,12 +8,14 @@ const popupList = Array.from(document.querySelectorAll('.popup'));
 
 
 
-function closePopup() {
-    popupList.forEach((popupElement) => {
-        if (popupElement.classList.contains('popup_opened')) {
-            popupElement.classList.remove('popup_opened');
-        }
-    })
+function closePopup(popup) {
+    console.log(popup)
+    popup.classList.remove('popup_opened')
+    // popupList.forEach((popupElement) => {
+    //     if (popupElement.classList.contains('popup_opened')) {
+    //         popupElement.classList.remove('popup_opened');
+    //     }
+    // })
     document.removeEventListener('keydown',handleEscKey);
     document.removeEventListener('mousedown', handleOverlayClick);
 }
@@ -21,13 +23,14 @@ function closePopup() {
 
 function handleEscKey(evt) {
     if (evt.key === 'Escape') {
-        closePopup();
+        const activePopup = document.querySelector('.popup_opened')
+        closePopup(activePopup);
     }
 }
 
 function handleOverlayClick(evt) {
     if (evt.target.classList.contains('popup_opened')) {
-        closePopup();
+        closePopup(evt.target.closest('.popup_opened'));
     }
 }
 
@@ -69,8 +72,9 @@ function handleProfileFormSubmit (evt) {
     evt.preventDefault();
     nameInfo.textContent = nameInput.value;
     jobInfo.textContent = jobInput.value;
-       
-    closePopup();
+
+    const activePopup = evt.target.closest('.popup_opened') 
+    closePopup(activePopup);
 };
 
 formProfileElement.addEventListener('submit',handleProfileFormSubmit);
@@ -92,11 +96,14 @@ function handleCardsFormSubmit (evt) {
     item.name = inputCard.value;
     item.link = inputImage.value;
 
-    addCard(new Card(item, '#element-template'));
+    const card = new Card(item, '#element-template');
+    addCard(card.createCard());
 
     inputCard.value = '';
     inputImage.value = '';
-    closePopup();
+
+    const activePopup = document.querySelector('.popup_opened')
+    closePopup(activePopup);
 };
 
 
@@ -149,8 +156,9 @@ function downloadCards () {
           link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg'
         }
       ];
-    initialCards.forEach(function(item){
-        addCard(new Card(item, '#element-template'));
+    initialCards.forEach((item, index) => {
+        const card = new Card(item, '#element-template') 
+        addCard(card.createCard());
     })
 }
 
@@ -169,7 +177,8 @@ downloadCards();
 const closePopupButtonList = Array.from(document.querySelectorAll('.popup__close'));
 
 closePopupButtonList.forEach((buttonElement) => {
-    buttonElement.addEventListener('click',closePopup)
+    const activePopup = buttonElement.closest('.popup')
+    buttonElement.addEventListener('click',() =>  closePopup(activePopup))
 })
 
 
@@ -187,3 +196,4 @@ const form1 = new FormValidator(selectorsForm, '.form1');
 form1.enableValidation()
 const form2 = new FormValidator(selectorsForm, '.form2');
 form2.enableValidation()
+
